@@ -2,7 +2,13 @@ import * as tf from '@tensorflow/tfjs'
 import { io } from 'socket.io-client'
 import axios from 'axios'
 
-const modelUrl = 'https://raw.githubusercontent.com/derrydwi/tfjs_model/main/model.json'
+const modelUrl = 'https://raw.githubusercontent.com/farishuwaidi/mymodel_52tfjs/main/model.json'
+// const modelUrl =
+//   'https://raw.githubusercontent.com/farishuwaidi/model_efficinetnetb2/main/model.json'
+// const modelUrl = 'https://raw.githubusercontent.com/derrydwi/tfjs_model/main/model.json'
+// const modelUrl = 'https://raw.githubusercontent.com/farishuwaidi/model_tfjs_exp/main/model.json'
+// const modelUrl =
+//   'https://storage.googleapis.com/jmstore/TensorFlowJS/EdX/SavedModels/sqftToPropertyPrice/model.json'
 const baseUrl = 'https://api.emoview-faris.hcerpl.id'
 
 let model, video, canvas, canvas2, ctx, expressionText
@@ -10,6 +16,7 @@ let isBusy = false
 
 const init = async () => {
   model = await tf.loadLayersModel(modelUrl)
+  model.summary()
   const state = await chrome.storage.sync.get()
   await chrome.storage.sync.set({
     isStart: state.isStart ?? false,
@@ -70,7 +77,7 @@ const predict = async ({ meetingId, datetime }) => {
     isBusy = true
     const tensor = tf.browser
       .fromPixels(video)
-      .resizeNearestNeighbor([48, 48])
+      .resizeNearestNeighbor([64, 64])
       .mean(2)
       .toFloat()
       .expandDims(0)
@@ -81,7 +88,9 @@ const predict = async ({ meetingId, datetime }) => {
       isBusy = false
     } else {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-      const label = ['neutral', 'happy', 'sad', 'surprise', 'fear', 'disgust', 'anger', 'contempt']
+      // const label = ['neutral', 'happy', 'sad', 'surprise', 'fear', 'disgust', 'anger', 'contempt']
+      // const label = ['anger', 'disgust', 'fear', 'happiness', 'neutral', 'sadness', 'surprise']
+      const label = ['neutral', 'happiness', 'sadness', 'surprise', 'fear', 'disgust', 'anger']
       const parsedResult = Object.fromEntries(label.map((name, index) => [name, result[index]]))
       const probability = parseProbability(parsedResult)
       const predict = getExpression(parsedResult)

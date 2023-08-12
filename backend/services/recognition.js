@@ -21,25 +21,23 @@ const get = async ({ id, limit }) => {
         $group: {
           _id: { $toString: '$createdAt' },
           neutral: { $avg: '$neutral' },
-          happy: { $avg: '$happy' },
-          sad: { $avg: '$sad' },
+          happiness: { $avg: '$happiness' },
+          sadness: { $avg: '$sadness' },
           anger: { $avg: '$anger' },
           fear: { $avg: '$fear' },
           disgust: { $avg: '$disgust' },
           surprise: { $avg: '$surprise' },
-          contempt: { $avg: '$contempt' },
         },
       },
       {
         $project: {
           neutral: { $round: ['$neutral', 2] },
-          happy: { $round: ['$happy', 2] },
-          sad: { $round: ['$sad', 2] },
+          happiness: { $round: ['$happiness', 2] },
+          sadness: { $round: ['$sadness', 2] },
           anger: { $round: ['$anger', 2] },
           fear: { $round: ['$fear', 2] },
           disgust: { $round: ['$disgust', 2] },
           surprise: { $round: ['$surprise', 2] },
-          contempt: { $round: ['$contempt', 2] },
         },
       },
       { $sort: { _id: -1 } },
@@ -54,25 +52,23 @@ const get = async ({ id, limit }) => {
         $group: {
           _id: null,
           neutral: { $avg: '$neutral' },
-          happy: { $avg: '$happy' },
-          sad: { $avg: '$sad' },
+          happiness: { $avg: '$happiness' },
+          sadness: { $avg: '$sadness' },
           anger: { $avg: '$anger' },
           fear: { $avg: '$fear' },
           disgust: { $avg: '$disgust' },
           surprise: { $avg: '$surprise' },
-          contempt: { $avg: '$contempt' },
         },
       },
       {
         $project: {
           neutral: { $round: { $multiply: ['$neutral', 100] } },
-          happy: { $round: { $multiply: ['$happy', 100] } },
-          sad: { $round: { $multiply: ['$sad', 100] } },
+          happiness: { $round: { $multiply: ['$happiness', 100] } },
+          sadness: { $round: { $multiply: ['$sadness', 100] } },
           anger: { $round: { $multiply: ['$anger', 100] } },
           fear: { $round: { $multiply: ['$fear', 100] } },
           disgust: { $round: { $multiply: ['$disgust', 100] } },
           surprise: { $round: { $multiply: ['$surprise', 100] } },
-          contempt: { $round: { $multiply: ['$contempt', 100] } },
         },
       },
       { $unset: ['_id'] },
@@ -84,22 +80,21 @@ const get = async ({ id, limit }) => {
       {
         $group: {
           _id: null,
-          positive: { $sum: { $add: ['$happy', '$surprise'] } },
+          positive: { $sum: { $add: ['$happiness', '$surprise'] } },
           negative: {
             $sum: {
-              $add: ['$sad', '$anger', '$fear', '$disgust', '$contempt'],
+              $add: ['$sadness', '$anger', '$fear', '$disgust'],
             },
           },
           count: {
             $sum: {
               $add: [
-                '$happy',
-                '$sad',
+                '$happiness',
+                '$sadness',
                 '$anger',
                 '$fear',
                 '$disgust',
                 '$surprise',
-                '$contempt',
               ],
             },
           },
@@ -136,13 +131,12 @@ const get = async ({ id, limit }) => {
   ])
   const labelsOverview = [
     'Neutral',
-    'Happy',
-    'Sad',
+    'Happiness',
+    'Sadness',
     'Anger',
     'Fear',
     'Disgust',
     'Surprise',
-    'Contempt',
   ]
   const labelsSummary = ['Positive', 'Negative']
   if (!meeting) return
@@ -160,13 +154,12 @@ const get = async ({ id, limit }) => {
       recognitionsDetail: {
         labels: recognitionDetail.map(({ _id }) => _id),
         neutral: recognitionDetail.map(({ neutral }) => neutral),
-        happy: recognitionDetail.map(({ happy }) => happy),
-        sad: recognitionDetail.map(({ sad }) => sad),
+        happiness: recognitionDetail.map(({ happiness }) => happiness),
+        sadness: recognitionDetail.map(({ sadness }) => sadness),
         anger: recognitionDetail.map(({ anger }) => anger),
         fear: recognitionDetail.map(({ fear }) => fear),
         disgust: recognitionDetail.map(({ disgust }) => disgust),
         surprise: recognitionDetail.map(({ surprise }) => surprise),
-        contempt: recognitionDetail.map(({ contempt }) => contempt),
       },
     },
   }
@@ -209,25 +202,23 @@ const getById = async ({ id, userId, limit }) => {
         $group: {
           _id: null,
           neutral: { $avg: '$neutral' },
-          happy: { $avg: '$happy' },
-          sad: { $avg: '$sad' },
+          happiness: { $avg: '$happiness' },
+          sadness: { $avg: '$sadness' },
           anger: { $avg: '$anger' },
           fear: { $avg: '$fear' },
           disgust: { $avg: '$disgust' },
           surprise: { $avg: '$surprise' },
-          contempt: { $avg: '$contempt' },
         },
       },
       {
         $project: {
           neutral: { $round: { $multiply: ['$neutral', 100] } },
-          happy: { $round: { $multiply: ['$happy', 100] } },
-          sad: { $round: { $multiply: ['$sad', 100] } },
+          happiness: { $round: { $multiply: ['$happiness', 100] } },
+          sadness: { $round: { $multiply: ['$sadness', 100] } },
           anger: { $round: { $multiply: ['$anger', 100] } },
           fear: { $round: { $multiply: ['$fear', 100] } },
           disgust: { $round: { $multiply: ['$disgust', 100] } },
           surprise: { $round: { $multiply: ['$surprise', 100] } },
-          contempt: { $round: { $multiply: ['$contempt', 100] } },
         },
       },
       { $unset: ['_id'] },
@@ -242,22 +233,21 @@ const getById = async ({ id, userId, limit }) => {
       {
         $group: {
           _id: null,
-          positive: { $sum: { $add: ['$happy', '$surprise'] } },
+          positive: { $sum: { $add: ['$happiness', '$surprise'] } },
           negative: {
             $sum: {
-              $add: ['$sad', '$anger', '$fear', '$disgust', '$contempt'],
+              $add: ['$sadness', '$anger', '$fear', '$disgust'],
             },
           },
           count: {
             $sum: {
               $add: [
-                '$happy',
-                '$sad',
+                '$happiness',
+                '$sadness',
                 '$anger',
                 '$fear',
                 '$disgust',
                 '$surprise',
-                '$contempt',
               ],
             },
           },
@@ -294,13 +284,12 @@ const getById = async ({ id, userId, limit }) => {
   ])
   const labelsOverview = [
     'Neutral',
-    'Happy',
-    'Sad',
+    'Happiness',
+    'Sadness',
     'Anger',
     'Fear',
     'Disgust',
     'Surprise',
-    'Contempt',
   ]
   const labelsSummary = ['Positive', 'Negative']
   if (!meeting || !user) return
@@ -319,13 +308,12 @@ const getById = async ({ id, userId, limit }) => {
       recognitionsDetail: {
         labels: recognitionDetail.map(({ createdAt }) => createdAt),
         neutral: recognitionDetail.map(({ neutral }) => neutral),
-        happy: recognitionDetail.map(({ happy }) => happy),
-        sad: recognitionDetail.map(({ sad }) => sad),
+        happiness: recognitionDetail.map(({ happiness }) => happiness),
+        sadness: recognitionDetail.map(({ sadness }) => sadness),
         anger: recognitionDetail.map(({ anger }) => anger),
         fear: recognitionDetail.map(({ fear }) => fear),
         disgust: recognitionDetail.map(({ disgust }) => disgust),
         surprise: recognitionDetail.map(({ surprise }) => surprise),
-        contempt: recognitionDetail.map(({ contempt }) => contempt),
         image: recognitionDetail.map(({ image }) => image),
       },
     },
@@ -347,38 +335,35 @@ const getOverview = async ({ role, createdBy }) => {
       $group: {
         _id: null,
         neutral: { $avg: '$neutral' },
-        happy: { $avg: '$happy' },
-        sad: { $avg: '$sad' },
+        happiness: { $avg: '$happiness' },
+        sadness: { $avg: '$sadness' },
         anger: { $avg: '$anger' },
         fear: { $avg: '$fear' },
         disgust: { $avg: '$disgust' },
         surprise: { $avg: '$surprise' },
-        contempt: { $avg: '$contempt' },
       },
     },
     {
       $project: {
         neutral: { $round: { $multiply: ['$neutral', 100] } },
-        happy: { $round: { $multiply: ['$happy', 100] } },
-        sad: { $round: { $multiply: ['$sad', 100] } },
+        happiness: { $round: { $multiply: ['$happiness', 100] } },
+        sadness: { $round: { $multiply: ['$sadness', 100] } },
         anger: { $round: { $multiply: ['$anger', 100] } },
         fear: { $round: { $multiply: ['$fear', 100] } },
         disgust: { $round: { $multiply: ['$disgust', 100] } },
         surprise: { $round: { $multiply: ['$surprise', 100] } },
-        contempt: { $round: { $multiply: ['$contempt', 100] } },
       },
     },
     { $unset: ['_id'] },
   ])
   const labels = [
     'Neutral',
-    'Happy',
-    'Sad',
+    'Happiness',
+    'Sadness',
     'Anger',
     'Fear',
     'Disgust',
     'Surprise',
-    'Contempt',
   ]
   return data[0] ? { labels, datas: Object.values(data[0]) } : {}
 }
@@ -397,20 +382,21 @@ const getSummary = async ({ role, createdBy }) => {
     {
       $group: {
         _id: null,
-        positive: { $sum: { $add: ['$happy', '$surprise'] } },
+        positive: { $sum: { $add: ['$happiness', '$surprise'] } },
         negative: {
-          $sum: { $add: ['$sad', '$anger', '$fear', '$disgust', '$contempt'] },
+          $sum: {
+            $add: ['$sadness', '$anger', '$fear', '$disgust'],
+          },
         },
         count: {
           $sum: {
             $add: [
-              '$happy',
-              '$sad',
+              '$happiness',
+              '$sadness',
               '$anger',
               '$fear',
               '$disgust',
               '$surprise',
-              '$contempt',
             ],
           },
         },

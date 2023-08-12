@@ -64,38 +64,35 @@ const getOverview = async ({ id, role, createdBy }) => {
       $group: {
         _id: null,
         neutral: { $avg: '$neutral' },
-        happy: { $avg: '$happy' },
-        sad: { $avg: '$sad' },
+        happiness: { $avg: '$happiness' },
+        sadness: { $avg: '$sadness' },
         anger: { $avg: '$anger' },
         fear: { $avg: '$fear' },
         disgust: { $avg: '$disgust' },
         surprise: { $avg: '$surprise' },
-        contempt: { $avg: '$contempt' },
       },
     },
     {
       $project: {
         neutral: { $round: { $multiply: ['$neutral', 100] } },
-        happy: { $round: { $multiply: ['$happy', 100] } },
-        sad: { $round: { $multiply: ['$sad', 100] } },
+        happiness: { $round: { $multiply: ['$happiness', 100] } },
+        sadness: { $round: { $multiply: ['$sadness', 100] } },
         anger: { $round: { $multiply: ['$anger', 100] } },
         fear: { $round: { $multiply: ['$fear', 100] } },
         disgust: { $round: { $multiply: ['$disgust', 100] } },
         surprise: { $round: { $multiply: ['$surprise', 100] } },
-        contempt: { $round: { $multiply: ['$contempt', 100] } },
       },
     },
     { $unset: ['_id'] },
   ])
   const labels = [
     'Neutral',
-    'Happy',
-    'Sad',
+    'Happiness',
+    'Sadness',
     'Anger',
     'Fear',
     'Disgust',
     'Surprise',
-    'Contempt',
   ]
   return data[0] ? { labels, datas: Object.values(data[0]) } : {}
 }
@@ -115,20 +112,21 @@ const getSummary = async ({ id, role, createdBy }) => {
     {
       $group: {
         _id: null,
-        positive: { $sum: { $add: ['$happy', '$surprise'] } },
+        positive: { $sum: { $add: ['$happiness', '$surprise'] } },
         negative: {
-          $sum: { $add: ['$sad', '$anger', '$fear', '$disgust', '$contempt'] },
+          $sum: {
+            $add: ['$sadness', '$anger', '$fear', '$disgust'],
+          },
         },
         count: {
           $sum: {
             $add: [
-              '$happy',
-              '$sad',
+              '$happiness',
+              '$sadness',
               '$anger',
               '$fear',
               '$disgust',
               '$surprise',
-              '$contempt',
             ],
           },
         },

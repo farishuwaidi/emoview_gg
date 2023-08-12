@@ -2,13 +2,12 @@ const mongoose = require('mongoose')
 
 const recognitionSchema = new mongoose.Schema({
   neutral: Number,
-  happy: Number,
-  sad: Number,
+  happiness: Number,
+  sadness: Number,
   anger: Number,
   fear: Number,
   disgust: Number,
   surprise: Number,
-  contempt: Number,
   predict: String,
   image: String,
   meetingId: {

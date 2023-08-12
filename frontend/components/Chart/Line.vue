@@ -178,8 +178,8 @@ export default {
         labels: this.data?.labels,
         datasets: [
           {
-            label: 'Happy',
-            data: this.data?.happy,
+            label: 'Happiness',
+            data: this.data?.happiness,
             borderColor: '#64DD17',
             backgroundColor: '#64DD17',
             borderWidth: 1,
@@ -202,14 +202,6 @@ export default {
             tension: 0.3,
           },
           {
-            label: 'Contempt',
-            data: this.data?.contempt,
-            borderColor: '#A8A8A8',
-            backgroundColor: '#A8A8A8',
-            borderWidth: 1,
-            tension: 0.3,
-          },
-          {
             label: 'Anger',
             data: this.data?.anger,
             borderColor: '#D50000',
@@ -226,8 +218,8 @@ export default {
             tension: 0.3,
           },
           {
-            label: 'Sad',
-            data: this.data?.sad,
+            label: 'Sadness',
+            data: this.data?.sadness,
             borderColor: '#2962FF',
             backgroundColor: '#2962FF',
             borderWidth: 1,
