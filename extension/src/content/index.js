@@ -1,10 +1,12 @@
 import * as tf from '@tensorflow/tfjs'
+import { io } from 'socket.io-client'
+import axios from 'axios'
 
 const modelUrl = 'https://raw.githubusercontent.com/derrydwi/tfjs_model/main/model.json'
 const baseUrl = 'https://api.emoview-faris.hcerpl.id'
 
-let video, canvas, canvas2, expressionText
-let model
+let model, video, canvas, canvas2, ctx, expressionText
+let isBusy = false
 
 const init = async () => {
   model = await tf.loadLayersModel(modelUrl)
@@ -24,6 +26,7 @@ const init = async () => {
       const div = document.createElement('div')
       video = document.createElement('video')
       canvas = document.createElement('canvas')
+      ctx = canvas.getContext('2d')
       canvas2 = document.createElement('canvas')
       expressionText = document.createElement('div')
       div.style.position = 'relative'
@@ -77,12 +80,13 @@ const predict = async ({ meetingId, datetime }) => {
       console.log('FER:: Face not detected')
       isBusy = false
     } else {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
       const label = ['neutral', 'happy', 'sad', 'surprise', 'fear', 'disgust', 'anger', 'contempt']
       const parsedResult = Object.fromEntries(label.map((name, index) => [name, result[index]]))
       const probability = parseProbability(parsedResult)
-      const predicted = getExpression(parsedResult)
-      expressionText.textContent = `${predicted} (${probability[predicted]})`
-      console.log('FER::', { probability, predicted })
+      const predict = getExpression(parsedResult)
+      expressionText.textContent = `${predict} (${probability[predict]})`
+      console.log('FER::', { probability, predict })
       const headers = {
         headers: {
           Authorization: state.user.token,
@@ -90,8 +94,8 @@ const predict = async ({ meetingId, datetime }) => {
       }
       const url = `${baseUrl}/recognition`
       const body = {
-        ...parseProbability(faceApiResult[0].expressions),
-        predict: getExpression(faceApiResult[0].expressions),
+        ...probability,
+        predict,
         meetingId,
         image: canvas.toDataURL('image/jpeg'),
         createdAt: datetime,

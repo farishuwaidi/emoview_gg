@@ -142,7 +142,7 @@ const get = async ({ id, limit }) => {
     'Fear',
     'Disgust',
     'Surprise',
-    'contempt',
+    'Contempt',
   ]
   const labelsSummary = ['Positive', 'Negative']
   if (!meeting) return
@@ -300,7 +300,7 @@ const getById = async ({ id, userId, limit }) => {
     'Fear',
     'Disgust',
     'Surprise',
-    'contempt',
+    'Contempt',
   ]
   const labelsSummary = ['Positive', 'Negative']
   if (!meeting || !user) return
@@ -378,7 +378,7 @@ const getOverview = async ({ role, createdBy }) => {
     'Fear',
     'Disgust',
     'Surprise',
-    'contempt',
+    'Contempt',
   ]
   return data[0] ? { labels, datas: Object.values(data[0]) } : {}
 }
