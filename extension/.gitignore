@@ -25,3 +25,7 @@
 
 # secrets
 secrets.*.js
+
+# crx build
+build.crx
+build.pem

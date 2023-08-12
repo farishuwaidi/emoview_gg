@@ -12,10 +12,10 @@ createApp(App)
   .use(store)
   .use(
     createAuth0({
-      domain: 'dev-fpv4uk28.us.auth0.com',
-      client_id: 'ZX0iBHrlt4sRkjGWfcSxfcZUlBlvFYHY',
+      domain: 'dev-7tpowz3p00vaqsyh.us.auth0.com',
+      client_id: 'mMCnATxyitcUGi9SynZPazaAZwjTXYsN',
       redirect_uri: chrome.runtime.getURL('popup.html'),
-      audience: 'https://dev-fpv4uk28.us.auth0.com/api/v2/',
+      audience: 'https://dev-7tpowz3p00vaqsyh.us.auth0.com/api/v2/',
     }),
   )
   .use(

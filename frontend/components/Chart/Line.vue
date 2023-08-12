@@ -105,7 +105,7 @@ ChartJS.register(
   LinearScale,
   CategoryScale,
   PointElement,
-  zoomPlugin,
+  zoomPlugin
 )
 
 export default {
@@ -187,7 +187,7 @@ export default {
           },
           {
             label: 'Surprise',
-            data: this.data?.surprised,
+            data: this.data?.surprise,
             backgroundColor: 'transparent',
             borderColor: '#FF6D00',
             borderWidth: 1,
@@ -195,15 +195,23 @@ export default {
           },
           {
             label: 'Fear',
-            data: this.data?.fearful,
+            data: this.data?.fear,
             backgroundColor: 'transparent',
             borderColor: '#AA00FF',
             borderWidth: 1,
             tension: 0.3,
           },
           {
-            label: 'Angry',
-            data: this.data?.angry,
+            label: 'Contempt',
+            data: this.data?.contempt,
+            backgroundColor: 'transparent',
+            borderColor: '#AA00FF',
+            borderWidth: 1,
+            tension: 0.3,
+          },
+          {
+            label: 'Anger',
+            data: this.data?.anger,
             backgroundColor: 'transparent',
             borderColor: '#D50000',
             borderWidth: 1,
@@ -211,14 +219,14 @@ export default {
           },
           {
             label: 'Disgust',
-            data: this.data?.disgusted,
+            data: this.data?.disgust,
             backgroundColor: 'transparent',
             borderColor: '#212121',
             borderWidth: 1,
             tension: 0.3,
           },
           {
-            label: 'Sadness',
+            label: 'Sad',
             data: this.data?.sad,
             backgroundColor: 'transparent',
             borderColor: '#2962FF',

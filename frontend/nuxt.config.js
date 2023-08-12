@@ -91,6 +91,8 @@ export default {
     '@nuxtjs/vuetify',
     // https://google-fonts.nuxtjs.org
     '@nuxtjs/google-fonts',
+    // https://color-mode.nuxtjs.org/
+    '@nuxtjs/color-mode',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -103,8 +105,6 @@ export default {
     '@nuxtjs/auth-next',
     // https://www.npmjs.com/package/@nuxtjs/dayjs
     '@nuxtjs/dayjs',
-    // https://color-mode.nuxtjs.org/
-    '@nuxtjs/color-mode',
     // https://www.npmjs.com/package/@nuxtjs/robots
     '@nuxtjs/robots',
     // https://www.npmjs.com/package/@nuxtjs/sitemap

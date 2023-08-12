@@ -29,4 +29,5 @@ export default defineManifest({
     },
   ],
   permissions: ['storage'],
+  key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAprN2xYdZPLt+DiG+EHZdViCI9DhuJhX9SIEoUipbAUcMjFW2tEfXfvE7B6lb6P6DVAOaXC2agWXTrwVAM7NJpXKldkWoGt3i60pVHTOF0C06XN34F4iF9ESD+EOTTRwPa9ElevuQgVo5RAJiepdFooVVcjrWhVqqQWyM23dviqtJ9xPoyeBn39mAK8v4YFxCLExoK8w75fODwk8enDw981mViC6fr0UpjMbiH0slB6DyceepEyB9MSvxROrHTJAzu08fGBRJeEs6FSPeYrvTsxCeGRBoS/U9pzcru6hC0QLCqYBKr4OTzdMWxnEzCsCohbaVgZoXRLGAB1AuzacD7wIDAQAB',
 })

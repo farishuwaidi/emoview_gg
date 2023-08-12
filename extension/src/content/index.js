@@ -52,30 +52,64 @@ const init = async () => {
 }
 
 const initSocketIo = async () => {
-  setInterval(() => {
-    predict({ meetingId: '', datetime: '' })
-  }, 3000)
+  const socket = io(baseUrl)
+  socket.emit('join', `student-${code}`)
+  socket.on('SEND_RECOGNITION_DATA', ({ meetingId, datetime }) => {
+    if (isBusy) return
+    predict({ meetingId, datetime })
+    console.log('FER:: Current time', datetime)
+  })
 }
 
 const predict = async ({ meetingId, datetime }) => {
   const state = await chrome.storage.sync.get()
-  // isBusy = true
-  const tensor = tf.browser
-    .fromPixels(video)
-    .resizeNearestNeighbor([48, 48])
-    .mean(2)
-    .toFloat()
-    .expandDims(0)
-    .expandDims(-1)
-  const result = await model.predict(tensor).arraySync()[0]
-  const label = ['neutral', 'happy', 'sad', 'surprise', 'fear', 'disgust', 'anger', 'contempt']
-  const parsedResult = Object.fromEntries(label.map((name, index) => [name, result[index]]))
-  const probability = parseProbability(parsedResult)
-  const predicted = getExpression(parsedResult)
-  expressionText.textContent = `${predicted} (${probability[predicted]})`
-  console.log('FER::', { probability, predicted })
-  console.log('FER::', `${predicted} (${probability[predicted]})`)
-  // isBusy = false
+  if (state.isStart) {
+    isBusy = true
+    const tensor = tf.browser
+      .fromPixels(video)
+      .resizeNearestNeighbor([48, 48])
+      .mean(2)
+      .toFloat()
+      .expandDims(0)
+      .expandDims(-1)
+    const result = await model.predict(tensor).arraySync()[0]
+    if (!result?.length) {
+      console.log('FER:: Face not detected')
+      isBusy = false
+    } else {
+      const label = ['neutral', 'happy', 'sad', 'surprise', 'fear', 'disgust', 'anger', 'contempt']
+      const parsedResult = Object.fromEntries(label.map((name, index) => [name, result[index]]))
+      const probability = parseProbability(parsedResult)
+      const predicted = getExpression(parsedResult)
+      expressionText.textContent = `${predicted} (${probability[predicted]})`
+      console.log('FER::', { probability, predicted })
+      const headers = {
+        headers: {
+          Authorization: state.user.token,
+        },
+      }
+      const url = `${baseUrl}/recognition`
+      const body = {
+        ...parseProbability(faceApiResult[0].expressions),
+        predict: getExpression(faceApiResult[0].expressions),
+        meetingId,
+        image: canvas.toDataURL('image/jpeg'),
+        createdAt: datetime,
+        updatedAt: datetime,
+      }
+      axios
+        .post(url, body, headers)
+        .then(({ data }) => {
+          console.log('FER:: Success', data)
+        })
+        .catch((err) => {
+          console.log('FER:: Error', err)
+        })
+        .finally(() => {
+          isBusy = false
+        })
+    }
+  }
 }
 
 const getExpression = (expressions) => {

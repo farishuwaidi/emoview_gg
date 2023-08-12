@@ -52,7 +52,6 @@ const handleUpdateName = () => {
           class="mb-2"
           color="blue"
           inset
-          readonly
           hide-details="true"
           @click="store.dispatch('user/toggleIsStart')"
         ></v-switch>
