@@ -34,6 +34,13 @@
         </CardWrapper>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <CardWrapper title="Average Valence Arousal">
+          <MiscValenceArousel :data="studentSummary?.valenceArousalSummary" />
+        </CardWrapper>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

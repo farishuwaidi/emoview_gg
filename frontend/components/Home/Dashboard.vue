@@ -36,6 +36,13 @@
         </CardWrapper>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <CardWrapper title="Average Valence Arousal" :is-popup="true">
+          <MiscValenceArousel :data="summary?.valenceArousalSummary" />
+        </CardWrapper>
+      </v-col>
+    </v-row>
   </div>
   <MiscGetStarted v-else />
 </template>

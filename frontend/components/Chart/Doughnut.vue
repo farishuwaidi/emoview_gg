@@ -126,7 +126,7 @@ export default {
 .customEmojiMargin {
   font-size: 3rem;
   position: absolute;
-  top: 64%;
+  top: 60%;
   left: 50%;
   transform: translate(-50%, 100%);
 }
