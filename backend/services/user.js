@@ -98,70 +98,109 @@ const getOverview = async ({ id, role, createdBy }) => {
 }
 
 const getSummary = async ({ id, role, createdBy }) => {
-  const data = await Recognition.aggregate([
-    {
-      $match: {
-        userId: mongoose.Types.ObjectId(id),
-        meetingId: {
-          $in: await Meeting.find({
-            ...(!role.includes('superadmin') && { createdBy }),
-          }).distinct('_id'),
-        },
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        positive: { $sum: { $add: ['$happiness', '$surprise'] } },
-        negative: {
-          $sum: {
-            $add: ['$sadness', '$anger', '$fear', '$disgust'],
+  const [recognitionsSummary, valenceArousalSummary] = await Promise.all([
+    Recognition.aggregate([
+      {
+        $match: {
+          userId: mongoose.Types.ObjectId(id),
+          meetingId: {
+            $in: await Meeting.find({
+              ...(!role.includes('superadmin') && { createdBy }),
+            }).distinct('_id'),
           },
         },
-        count: {
-          $sum: {
-            $add: [
-              '$happiness',
-              '$sadness',
-              '$anger',
-              '$fear',
-              '$disgust',
-              '$surprise',
+      },
+      {
+        $group: {
+          _id: null,
+          positive: { $sum: { $add: ['$happiness', '$surprise'] } },
+          negative: {
+            $sum: {
+              $add: ['$sadness', '$anger', '$fear', '$disgust'],
+            },
+          },
+          count: {
+            $sum: {
+              $add: [
+                '$happiness',
+                '$sadness',
+                '$anger',
+                '$fear',
+                '$disgust',
+                '$surprise',
+              ],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          positive: {
+            $cond: [
+              { $eq: ['$count', 0] },
+              0,
+              {
+                $round: {
+                  $multiply: [{ $divide: ['$positive', '$count'] }, 100],
+                },
+              },
+            ],
+          },
+          negative: {
+            $cond: [
+              { $eq: ['$count', 0] },
+              0,
+              {
+                $round: {
+                  $multiply: [{ $divide: ['$negative', '$count'] }, 100],
+                },
+              },
             ],
           },
         },
       },
-    },
-    {
-      $project: {
-        positive: {
-          $cond: [
-            { $eq: ['$count', 0] },
-            0,
-            {
-              $round: {
-                $multiply: [{ $divide: ['$positive', '$count'] }, 100],
-              },
-            },
-          ],
-        },
-        negative: {
-          $cond: [
-            { $eq: ['$count', 0] },
-            0,
-            {
-              $round: {
-                $multiply: [{ $divide: ['$negative', '$count'] }, 100],
-              },
-            },
-          ],
+      { $unset: ['_id', 'count'] },
+    ]),
+    Recognition.aggregate([
+      {
+        $match: {
+          userId: mongoose.Types.ObjectId(id),
+          meetingId: {
+            $in: await Meeting.find({
+              ...(!role.includes('superadmin') && { createdBy }),
+            }).distinct('_id'),
+          },
         },
       },
-    },
-    { $unset: ['_id', 'count'] },
+      {
+        $group: {
+          _id: null,
+          valence: { $avg: '$valence' },
+          arousal: { $avg: '$arousal' },
+        },
+      },
+      {
+        $project: {
+          valence: { $round: ['$valence', 2] },
+          arousal: { $round: ['$arousal', 2] },
+        },
+      },
+      { $unset: ['_id', 'count'] },
+    ]),
   ])
-  const labels = ['Positive', 'Negative']
-  return data[0] ? { labels, datas: Object.values(data[0]) } : {}
+  const labelsSummary = ['Positive', 'Negative']
+  const labelsValenceArousal = ['Valence', 'Arousal']
+  if (!recognitionsSummary.length) return
+  return {
+    recognitionsSummary: {
+      labels: labelsSummary,
+      datas: Object.values(recognitionsSummary[0]),
+    },
+    valenceArousalSummary: {
+      labels: labelsValenceArousal,
+      datas: Object.values(valenceArousalSummary[0]),
+    },
+  }
 }
 
 const create = async ({ body }) => {

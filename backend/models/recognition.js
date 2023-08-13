@@ -10,6 +10,8 @@ const recognitionSchema = new mongoose.Schema({
   surprise: Number,
   predict: String,
   image: String,
+  valence: Number,
+  arousal: Number,
   meetingId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Meeting',

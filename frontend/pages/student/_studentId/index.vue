@@ -18,7 +18,10 @@
       </div>
     </CardWrapper>
     <v-row
-      v-if="studentOverview?.datas?.length && studentSummary?.datas?.length"
+      v-if="
+        studentOverview?.datas?.length &&
+        studentSummary?.recognitionsSummary?.datas?.length
+      "
     >
       <v-col>
         <CardWrapper title="Overview" :height="450">
@@ -27,7 +30,7 @@
       </v-col>
       <v-col>
         <CardWrapper title="Summary" :height="450">
-          <ChartDoughnut :data="studentSummary" />
+          <ChartDoughnut :data="studentSummary?.recognitionsSummary" />
         </CardWrapper>
       </v-col>
     </v-row>

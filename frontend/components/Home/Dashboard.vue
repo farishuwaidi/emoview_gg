@@ -32,7 +32,7 @@
       </v-col>
       <v-col cols="12" md="6" class="pt-0">
         <CardWrapper title="Average Summary" :height="450">
-          <ChartDoughnut :data="summary" />
+          <ChartDoughnut :data="summary?.recognitionsSummary" />
         </CardWrapper>
       </v-col>
     </v-row>

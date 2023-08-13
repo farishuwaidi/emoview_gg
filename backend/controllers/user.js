@@ -73,7 +73,7 @@ const getSummary = async (req, res, next) => {
       'https://customclaim.com/id': createdBy,
     } = req.auth.payload
     const data = await user.getSummary({ id: req.params.id, role, createdBy })
-    if (!data?.datas?.length) {
+    if (!data) {
       return res.status(404).send({ message: 'Data not found!' })
     }
     return res.status(200).send({ data })

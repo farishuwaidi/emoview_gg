@@ -70,14 +70,14 @@ export default {
       default: () => {},
     },
     isPopup: {
-      default: false,
       type: Boolean,
+      default: false,
     },
   },
   computed: {
     emoji() {
       if (!this.data?.datas.length) return ''
-      else if (this.data?.datas.includes(NaN)) return '😐'
+      else if (this.data?.datas.includes(NaN || null)) return '😐'
       else if (this.data?.datas[0] > this.data?.datas[1]) return '🙂'
       else return '🙁'
     },

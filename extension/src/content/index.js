@@ -3,6 +3,8 @@ import { io } from 'socket.io-client'
 import axios from 'axios'
 
 const modelUrl = 'https://raw.githubusercontent.com/farishuwaidi/mymodel_52tfjs/main/model.json'
+const modelValenceArousalUrl =
+  'https://raw.githubusercontent.com/farishuwaidi/model_valaro/main/model.json'
 // const modelUrl =
 //   'https://raw.githubusercontent.com/farishuwaidi/model_efficinetnetb2/main/model.json'
 // const modelUrl = 'https://raw.githubusercontent.com/derrydwi/tfjs_model/main/model.json'
@@ -11,12 +13,16 @@ const modelUrl = 'https://raw.githubusercontent.com/farishuwaidi/mymodel_52tfjs/
 //   'https://storage.googleapis.com/jmstore/TensorFlowJS/EdX/SavedModels/sqftToPropertyPrice/model.json'
 const baseUrl = 'https://api.emoview-faris.hcerpl.id'
 
-let model, video, canvas, canvas2, ctx, expressionText
+let model, modelValenceArousal, video, canvas, canvas2, ctx, expressionText
 let isBusy = false
 
 const init = async () => {
-  model = await tf.loadLayersModel(modelUrl)
+  ;[model, modelValenceArousal] = await Promise.all([
+    tf.loadLayersModel(modelUrl),
+    tf.loadLayersModel(modelValenceArousalUrl),
+  ])
   model.summary()
+  modelValenceArousal.summary()
   const state = await chrome.storage.sync.get()
   await chrome.storage.sync.set({
     isStart: state.isStart ?? false,
@@ -83,6 +89,9 @@ const predict = async ({ meetingId, datetime }) => {
       .expandDims(0)
       .expandDims(-1)
     const result = await model.predict(tensor).arraySync()[0]
+    const test = await modelValenceArousal.predict(tensor).arraySync()[0]
+    const resultValenceArousal = scaleValue(test)
+    console.log('FER::test', test)
     if (!result?.length) {
       console.log('FER:: Face not detected')
       isBusy = false
@@ -91,11 +100,16 @@ const predict = async ({ meetingId, datetime }) => {
       // const label = ['neutral', 'happy', 'sad', 'surprise', 'fear', 'disgust', 'anger', 'contempt']
       // const label = ['anger', 'disgust', 'fear', 'happiness', 'neutral', 'sadness', 'surprise']
       const label = ['neutral', 'happiness', 'sadness', 'surprise', 'fear', 'disgust', 'anger']
+      const labelValenceArousal = ['valence', 'arousal']
       const parsedResult = Object.fromEntries(label.map((name, index) => [name, result[index]]))
+      const parsedResultValenceArousal = Object.fromEntries(
+        labelValenceArousal.map((name, index) => [name, resultValenceArousal[index]]),
+      )
       const probability = parseProbability(parsedResult)
+      const probabilityValenceArousal = parseProbability(parsedResultValenceArousal)
       const predict = getExpression(parsedResult)
       expressionText.textContent = `${predict} (${probability[predict]})`
-      console.log('FER::', { probability, predict })
+      console.log('FER::', { probability, probabilityValenceArousal, predict })
       const headers = {
         headers: {
           Authorization: state.user.token,
@@ -110,17 +124,18 @@ const predict = async ({ meetingId, datetime }) => {
         createdAt: datetime,
         updatedAt: datetime,
       }
-      axios
-        .post(url, body, headers)
-        .then(({ data }) => {
-          console.log('FER:: Success', data)
-        })
-        .catch((err) => {
-          console.log('FER:: Error', err)
-        })
-        .finally(() => {
-          isBusy = false
-        })
+      isBusy = false
+      // axios
+      //   .post(url, body, headers)
+      //   .then(({ data }) => {
+      //     console.log('FER:: Success', data)
+      //   })
+      //   .catch((err) => {
+      //     console.log('FER:: Error', err)
+      //   })
+      //   .finally(() => {
+      //     isBusy = false
+      //   })
     }
   }
 }
@@ -136,6 +151,15 @@ const parseProbability = (probability) => {
       [item[0]]: Number(item[1].toFixed(2)),
     })),
   )
+}
+
+const scaleValue = (array) => {
+  const minValue = Math.min(...array)
+  const maxValue = Math.max(...array)
+  const maxAbsValue = Math.max(Math.abs(minValue), Math.abs(maxValue))
+  const scaleFactor = maxAbsValue > 1 ? 1 / maxAbsValue : 1
+  const scaledArray = array.map((value) => value * scaleFactor)
+  return scaledArray
 }
 
 const code = location.pathname.includes('_')

@@ -160,6 +160,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedType: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -176,64 +180,84 @@ export default {
     chartData() {
       return {
         labels: this.data?.labels,
-        datasets: [
-          {
-            label: 'Happiness',
-            data: this.data?.happiness,
-            borderColor: '#64DD17',
-            backgroundColor: '#64DD17',
-            borderWidth: 1,
-            tension: 0.3,
-          },
-          {
-            label: 'Surprise',
-            data: this.data?.surprise,
-            borderColor: '#FF6D00',
-            backgroundColor: '#FF6D00',
-            borderWidth: 1,
-            tension: 0.3,
-          },
-          {
-            label: 'Fear',
-            data: this.data?.fear,
-            borderColor: '#AA00FF',
-            backgroundColor: '#AA00FF',
-            borderWidth: 1,
-            tension: 0.3,
-          },
-          {
-            label: 'Anger',
-            data: this.data?.anger,
-            borderColor: '#D50000',
-            backgroundColor: '#D50000',
-            borderWidth: 1,
-            tension: 0.3,
-          },
-          {
-            label: 'Disgust',
-            data: this.data?.disgust,
-            borderColor: '#212121',
-            backgroundColor: '#212121',
-            borderWidth: 1,
-            tension: 0.3,
-          },
-          {
-            label: 'Sadness',
-            data: this.data?.sadness,
-            borderColor: '#2962FF',
-            backgroundColor: '#2962FF',
-            borderWidth: 1,
-            tension: 0.3,
-          },
-          {
-            label: 'Neutral',
-            data: this.data?.neutral,
-            borderColor: '#00B8D4',
-            backgroundColor: '#00B8D4',
-            borderWidth: 1,
-            tension: 0.3,
-          },
-        ],
+        datasets:
+          this.selectedType === 'Expression'
+            ? [
+                {
+                  label: 'Happiness',
+                  data: this.data?.happiness,
+                  borderColor: '#64DD17',
+                  backgroundColor: '#64DD17',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Surprise',
+                  data: this.data?.surprise,
+                  borderColor: '#FF6D00',
+                  backgroundColor: '#FF6D00',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Fear',
+                  data: this.data?.fear,
+                  borderColor: '#AA00FF',
+                  backgroundColor: '#AA00FF',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Anger',
+                  data: this.data?.anger,
+                  borderColor: '#D50000',
+                  backgroundColor: '#D50000',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Disgust',
+                  data: this.data?.disgust,
+                  borderColor: '#212121',
+                  backgroundColor: '#212121',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Sadness',
+                  data: this.data?.sadness,
+                  borderColor: '#2962FF',
+                  backgroundColor: '#2962FF',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Neutral',
+                  data: this.data?.neutral,
+                  borderColor: '#00B8D4',
+                  backgroundColor: '#00B8D4',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+              ]
+            : [
+                {
+                  label: 'Valence',
+                  data: this.data?.valence,
+                  borderColor: '#00B8D4',
+                  backgroundColor: '#00B8D4',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Arousal',
+                  data: this.data?.arousal,
+                  borderColor: '#00B8D4',
+                  backgroundColor: '#00B8D4',
+                  borderWidth: 1,
+                  tension: 0.3,
+                },
+              ],
       }
     },
     chartOptions() {
