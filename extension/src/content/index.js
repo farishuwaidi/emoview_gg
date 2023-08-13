@@ -13,7 +13,15 @@ const modelValenceArousalUrl =
 //   'https://storage.googleapis.com/jmstore/TensorFlowJS/EdX/SavedModels/sqftToPropertyPrice/model.json'
 const baseUrl = 'https://api.emoview-faris.hcerpl.id'
 
-let model, modelValenceArousal, video, canvas, canvas2, ctx, expressionText
+let model,
+  modelValenceArousal,
+  video,
+  canvas,
+  canvas2,
+  ctx,
+  expressionText,
+  valenceText,
+  arousalText
 let isBusy = false
 
 const init = async () => {
@@ -42,6 +50,8 @@ const init = async () => {
       ctx = canvas.getContext('2d')
       canvas2 = document.createElement('canvas')
       expressionText = document.createElement('div')
+      valenceText = document.createElement('div')
+      arousalText = document.createElement('div')
       div.style.position = 'relative'
       div.style.width = '1px'
       div.style.zIndex = 99
@@ -51,14 +61,30 @@ const init = async () => {
       canvas.style.visibility = 'hidden'
       video.autoplay = true
       video.srcObject = stream
-      expressionText.style.position = 'absolute'
-      expressionText.style.bottom = '1.48rem'
-      expressionText.style.width = '180px'
-      expressionText.style.color = 'white'
-      expressionText.style.fontSize = '16px'
-      expressionText.style.textAlign = 'center'
-      expressionText.style.backgroundColor = '#989898'
+      expressionText.style.bottom = '1.5rem'
+      valenceText.style.bottom = '0.3rem'
+      arousalText.style.bottom = '-0.9rem'
+      expressionText.style.position =
+        valenceText.style.position =
+        arousalText.style.position =
+          'absolute'
+      expressionText.style.width = valenceText.style.width = arousalText.style.width = '180px'
+      expressionText.style.color = valenceText.style.color = arousalText.style.color = 'white'
+      expressionText.style.fontSize =
+        valenceText.style.fontSize =
+        arousalText.style.fontSize =
+          '16px'
+      expressionText.style.textAlign =
+        valenceText.style.textAlign =
+        arousalText.style.textAlign =
+          'center'
+      expressionText.style.backgroundColor =
+        valenceText.style.backgroundColor =
+        arousalText.style.backgroundColor =
+          '#989898'
       div.appendChild(expressionText)
+      div.appendChild(valenceText)
+      div.appendChild(arousalText)
       document.body.appendChild(div)
       div.appendChild(video)
       div.appendChild(canvas)
@@ -108,7 +134,10 @@ const predict = async ({ meetingId, datetime }) => {
       const probability = parseProbability(parsedResult)
       const probabilityValenceArousal = parseProbability(parsedResultValenceArousal)
       const predict = getExpression(parsedResult)
+      console.log('FER::parsedResultValenceArousal', parsedResultValenceArousal)
       expressionText.textContent = `${predict} (${probability[predict]})`
+      valenceText.textContent = `valence (${probabilityValenceArousal.valence})`
+      arousalText.textContent = `arousal (${probabilityValenceArousal.arousal})`
       console.log('FER::', { probability, probabilityValenceArousal, predict })
       const headers = {
         headers: {
@@ -118,24 +147,24 @@ const predict = async ({ meetingId, datetime }) => {
       const url = `${baseUrl}/recognition`
       const body = {
         ...probability,
+        ...probabilityValenceArousal,
         predict,
         meetingId,
         image: canvas.toDataURL('image/jpeg'),
         createdAt: datetime,
         updatedAt: datetime,
       }
-      isBusy = false
-      // axios
-      //   .post(url, body, headers)
-      //   .then(({ data }) => {
-      //     console.log('FER:: Success', data)
-      //   })
-      //   .catch((err) => {
-      //     console.log('FER:: Error', err)
-      //   })
-      //   .finally(() => {
-      //     isBusy = false
-      //   })
+      axios
+        .post(url, body, headers)
+        .then(({ data }) => {
+          console.log('FER:: Success', data)
+        })
+        .catch((err) => {
+          console.log('FER:: Error', err)
+        })
+        .finally(() => {
+          isBusy = false
+        })
     }
   }
 }
