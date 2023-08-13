@@ -94,7 +94,7 @@
       </slot>
     </v-main>
     <v-footer v-if="!isPopup" inset absolute app>
-      <span>&copy; {{ new Date().getFullYear() }}, Derry Dwi Aditya</span>
+      <span>&copy; {{ new Date().getFullYear() }}, EmoView</span>
     </v-footer>
     <BaseSnackbar />
   </v-app>
