@@ -2,7 +2,8 @@ import * as tf from '@tensorflow/tfjs'
 import { io } from 'socket.io-client'
 import axios from 'axios'
 
-const modelUrl = 'https://raw.githubusercontent.com/farishuwaidi/mymodel_52tfjs/main/model.json'
+const modelUrl = 'https://raw.githubusercontent.com/farishuwaidi/mymodel_56tfjs/main/model.json'
+// const modelUrl = 'https://raw.githubusercontent.com/farishuwaidi/mymodel_52tfjs/main/model.json'
 const modelValenceArousalUrl =
   'https://raw.githubusercontent.com/farishuwaidi/model_valaro/main/model.json'
 // const modelUrl =
@@ -109,22 +110,28 @@ const predict = async ({ meetingId, datetime }) => {
     isBusy = true
     const tensor = tf.browser
       .fromPixels(video)
+      .resizeNearestNeighbor([128, 128])
+      .mean(2)
+      .toFloat()
+      .expandDims(0)
+      .expandDims(-1)
+    const tensorValenceArousal = tf.browser
+      .fromPixels(video)
       .resizeNearestNeighbor([64, 64])
       .mean(2)
       .toFloat()
       .expandDims(0)
       .expandDims(-1)
     const result = await model.predict(tensor).arraySync()[0]
-    const test = await modelValenceArousal.predict(tensor).arraySync()[0]
-    const resultValenceArousal = scaleValue(test)
-    console.log('FER::test', test)
+    const predictValenceArousal = await modelValenceArousal
+      .predict(tensorValenceArousal)
+      .arraySync()[0]
+    const resultValenceArousal = scaleValue(predictValenceArousal)
     if (!result?.length) {
       console.log('FER:: Face not detected')
       isBusy = false
     } else {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-      // const label = ['neutral', 'happy', 'sad', 'surprise', 'fear', 'disgust', 'anger', 'contempt']
-      // const label = ['anger', 'disgust', 'fear', 'happiness', 'neutral', 'sadness', 'surprise']
       const label = ['neutral', 'happiness', 'sadness', 'surprise', 'fear', 'disgust', 'anger']
       const labelValenceArousal = ['valence', 'arousal']
       const parsedResult = Object.fromEntries(label.map((name, index) => [name, result[index]]))
@@ -134,7 +141,6 @@ const predict = async ({ meetingId, datetime }) => {
       const probability = parseProbability(parsedResult)
       const probabilityValenceArousal = parseProbability(parsedResultValenceArousal)
       const predict = getExpression(parsedResult)
-      console.log('FER::parsedResultValenceArousal', parsedResultValenceArousal)
       expressionText.textContent = `${predict} (${probability[predict]})`
       valenceText.textContent = `valence (${probabilityValenceArousal.valence})`
       arousalText.textContent = `arousal (${probabilityValenceArousal.arousal})`
